@@ -1,7 +1,7 @@
 package net.yoedtos.intime.view
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import net.yoedtos.intime.R
 
 class MainActivity : AppCompatActivity() {
