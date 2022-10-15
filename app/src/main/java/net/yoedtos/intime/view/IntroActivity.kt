@@ -5,7 +5,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_intro.*
 import net.yoedtos.intime.R
-import net.yoedtos.intime.view.SetUpUtils.setupFullScreen
+import net.yoedtos.intime.view.ViewUtils.setupFullScreen
 
 class IntroActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -14,4 +14,7 @@
     <string name="please_wait">Please Wait&#8230;</string>
     <string name="nav_my_profile">My Profile</string>
     <string name="nav_logout">Logout</string>
+    <string name="mobile">Mobile</string>
+    <string name="update">UPDATE</string>
+    <string name="profile_title">Profile</string>
 </resources>
