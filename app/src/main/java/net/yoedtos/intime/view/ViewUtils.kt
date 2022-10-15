@@ -8,7 +8,6 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.activity_profile.*
 import net.yoedtos.intime.R
 
 object ViewUtils {
@@ -20,13 +19,13 @@ object ViewUtils {
         activity.startActivityForResult(galleryIntent, RequestCode.PICK_IMAGE_CODE)
     }
 
-    fun setImageToView(activity: AppCompatActivity, image: String) {
+    fun setImageToView(activity: AppCompatActivity, imageData: ImageData) {
         Glide
             .with(activity)
-            .load(image)
+            .load(imageData.image)
             .centerCrop()
-            .placeholder(R.drawable.ic_user_place_holder)
-            .into(activity.iv_user_image)
+            .placeholder(imageData.resourceId)
+            .into(imageData.imageView)
     }
 
     fun setupFullScreen(activity: AppCompatActivity) {
