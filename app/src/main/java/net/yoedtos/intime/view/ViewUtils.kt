@@ -1,13 +1,34 @@
 package net.yoedtos.intime.view
 
+import android.content.Intent
+import android.provider.MediaStore
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
+import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_profile.*
 import net.yoedtos.intime.R
 
 object ViewUtils {
+    fun showImageChooser(activity: AppCompatActivity) {
+        val galleryIntent = Intent(
+            Intent.ACTION_PICK,
+            MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+
+        activity.startActivityForResult(galleryIntent, RequestCode.PICK_IMAGE_CODE)
+    }
+
+    fun setImageToView(activity: AppCompatActivity, image: String) {
+        Glide
+            .with(activity)
+            .load(image)
+            .centerCrop()
+            .placeholder(R.drawable.ic_user_place_holder)
+            .into(activity.iv_user_image)
+    }
+
     fun setupFullScreen(activity: AppCompatActivity) {
         activity.window.setFlags(
             WindowManager.LayoutParams.FLAG_FULLSCREEN,
