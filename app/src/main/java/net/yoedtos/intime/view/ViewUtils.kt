@@ -1,5 +1,6 @@
 package net.yoedtos.intime.view
 
+import android.content.Context
 import android.content.Intent
 import android.provider.MediaStore
 import android.view.WindowManager
@@ -19,9 +20,9 @@ object ViewUtils {
         activity.startActivityForResult(galleryIntent, RequestCode.PICK_IMAGE_CODE)
     }
 
-    fun setImageToView(activity: AppCompatActivity, imageData: ImageData) {
+    fun setImageToView(context: Context, imageData: ImageData) {
         Glide
-            .with(activity)
+            .with(context)
             .load(imageData.image)
             .centerCrop()
             .placeholder(imageData.resourceId)
