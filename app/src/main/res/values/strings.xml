@@ -21,4 +21,9 @@
     <string name="create">CREATE</string>
     <string name="board_name">Board Name</string>
     <string name="no_boards_are_available">No Boards are available!</string>
+    <string name="members">Members</string>
+    <string name="add_member">Add Member</string>
+    <string name="cancel">CANCEL</string>
+    <string name="add">ADD</string>
+    <string name="search_member">Search Member</string>
 </resources>
