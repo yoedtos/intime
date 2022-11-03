@@ -6,6 +6,5 @@ data class User(
     val email: String = "",
     val image: String = "",
     val mobile: Long = 0,
-    val token: String = "",
-    val selected: Boolean = false
+    val token: String = ""
 )

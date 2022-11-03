@@ -1,14 +1,10 @@
 package net.yoedtos.intime.view.adapter
 
-import android.app.AlertDialog
 import android.content.Context
 import android.content.res.Resources
-import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.item_task.view.*
 import net.yoedtos.intime.R
@@ -22,8 +18,8 @@ import net.yoedtos.intime.view.ListViewUtils.setupAddCloseOnClick
 import net.yoedtos.intime.view.ListViewUtils.showEditTaskListInput
 import net.yoedtos.intime.view.ListViewUtils.showTaskList
 import net.yoedtos.intime.view.TasksActivity
+import net.yoedtos.intime.view.info.DeleteAlert
 import net.yoedtos.intime.view.info.ItemViewHolder
-import net.yoedtos.intime.view.listener.ItemClickListener
 
 class TaskItemsAdapter(private val context: Context, private var taskList:ArrayList<Task>): RecyclerView.Adapter<ItemViewHolder>() {
 
@@ -73,7 +69,7 @@ class TaskItemsAdapter(private val context: Context, private var taskList:ArrayL
         }
 
         itemView.ib_delete_list.setOnClickListener {
-            deleteAlert(position)
+            deleteWithAlert(position, task.title)
         }
 
         itemView.ib_done_card_name.setOnClickListener {
@@ -88,7 +84,6 @@ class TaskItemsAdapter(private val context: Context, private var taskList:ArrayL
     override fun getItemCount(): Int {
         return taskList.size
     }
-
     /**
      * Convert screen pixel to density pixel
      * @return dp in Int
@@ -106,22 +101,12 @@ class TaskItemsAdapter(private val context: Context, private var taskList:ArrayL
         }
     }
 
-    private fun deleteAlert(position: Int) {
-        val alertDialog = AlertDialog.Builder(context)
-            .setTitle(context.getString(R.string.alert_title))
-            .setMessage(R.string.alert_delete_confirm)
-            .setIcon(android.R.drawable.ic_dialog_alert)
-            .setCancelable(true)
-            .setPositiveButton(context.getString(R.string.alert_yes)) { dialogInterface, _ ->
+    private fun deleteWithAlert(position: Int, taskName: String) {
+        DeleteAlert(context, taskName)
+            .setPositiveButton(R.string.alert_yes) {dialogInterface, _ ->
                 taskList.removeAt(position)
                 updateData()
                 dialogInterface.dismiss()
-            }
-            .setNegativeButton(context.getString(R.string.alert_no)) { dialogInterface, _ ->
-                dialogInterface.dismiss()
-            }
-            .create()
-
-        alertDialog.show()
+            }.create().show()
     }
 }

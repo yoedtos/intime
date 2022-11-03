@@ -6,8 +6,9 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.activity_members.*
+import kotlinx.android.synthetic.main.dlg_search_member.*
 import net.yoedtos.intime.R
-import net.yoedtos.intime.model.entity.User
+import net.yoedtos.intime.model.dto.Member
 import net.yoedtos.intime.view.ViewUtils.setupActionBar
 import net.yoedtos.intime.view.adapter.MemberItemsAdapter
 import net.yoedtos.intime.view.info.SearchDialog
@@ -32,19 +33,29 @@ class MembersActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId) {
             R.id.action_add_member -> {
-                SearchDialog(this).show()
+                showSearchDialog()
                 return true
             }
         }
         return super.onOptionsItemSelected(item)
     }
 
-    fun searchMember(memberEmail: String) {
+    private fun searchMember(memberEmail: String) {
 
     }
 
-    private fun loadMembersToUI(members: ArrayList<User>) {
+    private fun loadMembersToUI(members: ArrayList<Member>) {
         membersAdapter = MemberItemsAdapter(members)
         rv_members_list.adapter = membersAdapter
+    }
+
+    private fun showSearchDialog() {
+        val searchDialog = SearchDialog(this)
+        searchDialog.tv_add.setOnClickListener {
+            val memberEmail = searchDialog.et_email_search_member.text.toString()
+            searchMember(memberEmail)
+            searchDialog.dismiss()
+        }
+        searchDialog.show()
     }
 }

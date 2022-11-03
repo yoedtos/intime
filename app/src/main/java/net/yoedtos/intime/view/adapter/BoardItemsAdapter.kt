@@ -3,12 +3,10 @@ package net.yoedtos.intime.view.adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.item_board.view.*
 import net.yoedtos.intime.R
 import net.yoedtos.intime.model.entity.Board
 import net.yoedtos.intime.view.ImageData
-import net.yoedtos.intime.view.ViewUtils
 import net.yoedtos.intime.view.ViewUtils.setImageToView
 import net.yoedtos.intime.view.info.ItemViewHolder
 import net.yoedtos.intime.view.listener.ItemClickListener
@@ -23,13 +21,16 @@ class BoardItemsAdapter(private val items: ArrayList<Board>): RecyclerView.Adapt
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
         val board = items[position]
+        val itemView = holder.itemView
 
-        setImageToView(holder.itemView.context, ImageData(board.image, R.drawable.ic_board_place_holder, holder.itemView.iv_board_image))
+        setImageToView(itemView.context,
+            ImageData(board.image, R.drawable.ic_board_place_holder, itemView.iv_board_image))
 
-        holder.itemView.tv_name.text = board.name
-        holder.itemView.tv_created_by.text = board.createdBy
+        val createdBy = itemView.context.resources.getString(R.string.created_by, board.createdBy)
+        itemView.tv_name.text = board.name
+        itemView.tv_created_by.text = createdBy
 
-        holder.itemView.setOnClickListener{
+        itemView.setOnClickListener{
             if (clickListener != null) {
                 clickListener!!.onClick(position, board)
             }
