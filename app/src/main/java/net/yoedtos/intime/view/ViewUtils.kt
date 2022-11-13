@@ -2,12 +2,14 @@ package net.yoedtos.intime.view
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.provider.MediaStore
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import com.bumptech.glide.Glide
+import kotlinx.android.synthetic.main.activity_card.*
 import kotlinx.android.synthetic.main.activity_main.*
 import net.yoedtos.intime.R
 
@@ -57,7 +59,12 @@ object ViewUtils {
         }
     }
 
-    /**
+    fun setupLabelColorInView(activity: AppCompatActivity, color: String) {
+        activity.tv_select_label_color.text = ""
+        activity.tv_select_label_color.setBackgroundColor(Color.parseColor(color))
+    }
+
+     /**
      * Close the navigation view if it's open
      * @return true if it's closed
      */

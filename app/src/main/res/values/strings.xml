@@ -36,4 +36,22 @@
     <string name="alert_no">No</string>
     <string name="alert_delete_confirm">Are you sure to delete %s?</string>
     <string name="created_by">Created by %s</string>
+    <string name="label_color">Label Color</string>
+    <string name="select_color">Select Color</string>
+    <string name="select_members">Select Members</string>
+    <string name="due_date">Due Date</string>
+    <string name="select_due_date">Select Due Date</string>
+    <string name="delete_card">Delete Card</string>
+    <string name="select_label_color">Select Label Color</string>
+    <string name="select_member">Select Member</string>
+
+    <string-array name="label_color_array">
+        <item>#43C86F</item>
+        <item>#0C90F1</item>
+        <item>#F72400</item>
+        <item>#7A8089</item>
+        <item>#D57C1D</item>
+        <item>#770000</item>
+        <item>#0022F8</item>
+    </string-array>
 </resources>
