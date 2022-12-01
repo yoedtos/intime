@@ -48,6 +48,9 @@
     <string name="entry_size_error">The size in %s is invalid</string>
     <string name="provider_error">Provider Error</string>
     <string name="provider_error_msg">An error occur: %s</string>
+    <string name="permission_request">"Permission Required"</string>
+    <string name="permission_request_msg">"It looks like permission is turned off, it's required for this feature"</string>
+    <string name="go_settings">GO TO SETTINGS</string>
 
     <string-array name="label_color_array">
         <item>#43C86F</item>
