@@ -8,7 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_splash.*
 import kotlinx.android.synthetic.main.activity_splash.view.*
 import net.yoedtos.intime.R
-import net.yoedtos.intime.view.SetUpUtils.setupFullScreen
+import net.yoedtos.intime.view.ViewUtils.setupFullScreen
 
 class SplashActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -20,5 +20,9 @@ class SplashActivity : AppCompatActivity() {
         val typeFace = Typeface.createFromAsset(assets, "tex-gyre-adventor.otf")
         tv_app_name.tv_app_name.typeface = typeFace
 
+        Handler(mainLooper).postDelayed({
+            startActivity(Intent(this, IntroActivity::class.java))
+            finish()
+        }, 2000)
     }
 }

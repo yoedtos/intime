@@ -9,4 +9,7 @@ object Constants {
     const val PACKAGE = "package"
     const val CACHE = "intime.cache"
     const val READ_STORAGE = Manifest.permission.READ_EXTERNAL_STORAGE
+    const val OK = "Ok"
+    const val DOT =  "."
+    const val IMAGE_SRC = "http://"
 }

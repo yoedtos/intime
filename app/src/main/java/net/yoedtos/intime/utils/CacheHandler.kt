@@ -30,6 +30,7 @@ class CacheHandler(context: Context) {
 
     fun clearAll() {
         editor.clear()
+        editor.commit()
     }
 
     fun saveObject(any: Any) {
@@ -39,6 +40,9 @@ class CacheHandler(context: Context) {
 
     fun loadObject(clazz: Class<*>): Any {
         val json = load(clazz.simpleName)
+        if(json.isEmpty()) {
+            throw IllegalStateException()
+        }
         return Gson().fromJson(json, clazz)
     }
 }
