@@ -5,13 +5,13 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.item_board.view.*
 import net.yoedtos.intime.R
-import net.yoedtos.intime.model.entity.Board
+import net.yoedtos.intime.model.dto.BoardDTO
 import net.yoedtos.intime.view.ImageData
 import net.yoedtos.intime.view.ViewUtils.setImageToView
 import net.yoedtos.intime.view.info.ItemViewHolder
 import net.yoedtos.intime.view.listener.ItemClickListener
 
-class BoardItemsAdapter(private val items: ArrayList<Board>): RecyclerView.Adapter<ItemViewHolder>() {
+class BoardItemsAdapter(private val items: ArrayList<BoardDTO>): RecyclerView.Adapter<ItemViewHolder>() {
 
     private var clickListener: ItemClickListener? = null
 
