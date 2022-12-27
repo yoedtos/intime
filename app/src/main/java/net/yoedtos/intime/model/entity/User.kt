@@ -2,9 +2,9 @@ package net.yoedtos.intime.model.entity
 
 data class User(
     val id: String ="",
-    val name: String = "",
+    var name: String = "",
     val email: String = "",
-    val image: String = "",
-    val mobile: Long = 0,
-    val token: String = ""
+    var image: String = "",
+    var mobile: Long = 0,
+    var token: String = ""
 )

@@ -51,6 +51,10 @@
     <string name="permission_request">"Permission Required"</string>
     <string name="permission_request_msg">"It looks like permission is turned off, it's required for this feature"</string>
     <string name="go_settings">GO TO SETTINGS</string>
+    <string name="created">Created %s</string>
+    <string name="added">Added %s</string>
+    <string name="updated">Updated %s</string>
+    <string name="user_not_found">User not found!</string>
 
     <string-array name="label_color_array">
         <item>#43C86F</item>

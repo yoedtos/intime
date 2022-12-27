@@ -8,6 +8,7 @@ import net.yoedtos.intime.client.FileBaseAuth
 import net.yoedtos.intime.model.Constants
 import net.yoedtos.intime.model.dto.Login
 import net.yoedtos.intime.model.dto.Register
+import net.yoedtos.intime.model.entity.User
 import net.yoedtos.intime.service.base.ProviderAuth
 import net.yoedtos.intime.utils.CacheHandler
 
@@ -15,6 +16,7 @@ private val LOG_TAG = AuthService::class.simpleName
 
 class AuthService private constructor(){
     private val authenticator: ProviderAuth
+    private val userService = UserService()
 
     companion object {
         private var instance: AuthService? = null
@@ -38,7 +40,19 @@ class AuthService private constructor(){
                 if (task.isSuccessful) {
                     val firebaseUser = task.result?.user
                     Log.d(LOG_TAG, "Created ID: ${firebaseUser?.uid}")
-                    resultListener.onSuccess(Constants.OK)
+                    if (firebaseUser != null)
+                        userService.create(User(firebaseUser.uid, register.name, register.email), object : ResultListener {
+                                override fun onSuccess(any: Any) {
+                                    Log.d(LOG_TAG, "Created user")
+                                    resultListener.onSuccess(Constants.OK)
+                                }
+
+                                override fun onFailure(message: String) {
+                                    resultListener.onFailure(message)
+                                }
+
+                            })
+
                 }
             }
             .addOnFailureListener {
