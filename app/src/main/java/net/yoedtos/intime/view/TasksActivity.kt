@@ -13,19 +13,24 @@ import net.yoedtos.intime.R
 import net.yoedtos.intime.model.Constants
 import net.yoedtos.intime.model.entity.Card
 import net.yoedtos.intime.model.entity.Task
+import net.yoedtos.intime.service.ResultListener
 import net.yoedtos.intime.service.TasksService
 import net.yoedtos.intime.view.ViewUtils.setupActionBar
 import net.yoedtos.intime.view.adapter.TaskItemsAdapter
+import net.yoedtos.intime.view.info.ErrorAlert
+import net.yoedtos.intime.view.info.Progress
 import net.yoedtos.intime.view.listener.ChangeListener
-import net.yoedtos.intime.view.listener.ItemClickListener
+import net.yoedtos.intime.view.listener.CardClickListener
 
 private val LOG_TAG = TasksActivity::class.java.simpleName
 
-class TasksActivity: AppCompatActivity(), ItemClickListener, ChangeListener {
+class TasksActivity: AppCompatActivity(), CardClickListener, ChangeListener {
     private var taskIndex = 0
     private var boardId: String = "0"
     private var taskItemsAdapter: TaskItemsAdapter? = null
     private var taskList: ArrayList<Task> = ArrayList()
+    private lateinit var tasksService:TasksService
+    private lateinit var progress: Progress
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,7 +40,6 @@ class TasksActivity: AppCompatActivity(), ItemClickListener, ChangeListener {
 
         rv_task_list.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         rv_task_list.setHasFixedSize(true)
-
         initialize()
     }
 
@@ -55,7 +59,6 @@ class TasksActivity: AppCompatActivity(), ItemClickListener, ChangeListener {
 
     override fun onStart() {
         Log.d(LOG_TAG, "On start")
-
         super.onStart()
     }
 
@@ -69,36 +72,56 @@ class TasksActivity: AppCompatActivity(), ItemClickListener, ChangeListener {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode == Activity.RESULT_OK && requestCode == RequestCode.CARD_VIEW) {
             if (data != null && data.hasExtra(IntentExtra.CARD_LIST)) {
-                var cardList: ArrayList<Card> =
-                    data.getParcelableArrayListExtra<Card>(IntentExtra.CARD_LIST) as ArrayList<Card>
+                val cardList = data.getParcelableArrayListExtra<Card>(IntentExtra.CARD_LIST) as ArrayList<Card>
+                tasksService.addCards(taskIndex, cardList)
+                updateAndPersistData()
             }
         }
         super.onActivityResult(requestCode, resultCode, data)
     }
-    override fun onClick(position: Int, item: Any) {
+
+    override fun onClick(index: Int, position: Int, item: Any) {
+        taskIndex = index
         callCardActivity(position, item as ArrayList<Card>)
     }
 
     override fun onAdd(index: Int, any: Any) {
         taskIndex = index
+        tasksService.addTask(any as String)
 
         updateAndPersistData()
     }
 
     override fun onUpdate(index: Int, any: Any) {
         taskIndex = index
-
+        if (any is Task) {
+            tasksService.updateTask(index, any)
+        } else {
+            tasksService.addCardToTask(index, any as String)
+        }
         updateAndPersistData()
     }
 
     override fun onDelete(index: Int) {
         taskIndex = index
+        tasksService.deleteTask(index)
 
         updateAndPersistData()
     }
+
     private fun updateAndPersistData() {
         taskItemsAdapter?.notifyDataSetChanged()
+        tasksService.updatePersist(object : ResultListener {
+            override fun onSuccess(any: Any) {
+                taskList = any as ArrayList<Task>
+                loadTasksToUI(taskList)
+            }
 
+            override fun onFailure(message: String) {
+                ErrorAlert(this@TasksActivity, message).show()
+            }
+
+        })
     }
 
     private fun loadTasksToUI(taskList: ArrayList<Task>) {
@@ -108,14 +131,31 @@ class TasksActivity: AppCompatActivity(), ItemClickListener, ChangeListener {
     }
 
     private fun initialize() {
+        progress = Progress(this)
+
         if (intent.hasExtra(IntentExtra.BOARD_ID)) {
             boardId = intent.getStringExtra(IntentExtra.BOARD_ID).toString()
             val boardName = intent.getStringExtra(IntentExtra.BOARD_NAME)
 
             supportActionBar?.title = boardName
+            tasksService = TasksService(boardId)
 
-            taskList.add(Task(resources.getString(R.string.add_list), Constants.APPSYS))
-            loadTasksToUI(taskList)
+            progress.showDefault()
+            tasksService.loadTaskList(object : ResultListener {
+                override fun onSuccess(any: Any) {
+                    progress.hideView()
+
+                    taskList = any as ArrayList<Task>
+                    taskList.add(Task("0", resources.getString(R.string.add_list), Constants.APPSYS))
+                    loadTasksToUI(taskList)
+                }
+
+                override fun onFailure(message: String) {
+                    progress.hideView()
+                    ErrorAlert(this@TasksActivity, message).show()
+                }
+
+            })
         }
     }
 

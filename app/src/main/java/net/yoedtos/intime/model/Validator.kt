@@ -31,6 +31,10 @@ class Validator(val resources: Resources) {
         validate(boardDTO.name, resources.getString(R.string.board_name))
     }
 
+    fun validateEmail(email: String) {
+        validate(email, resources.getString(R.string.email))
+    }
+
     private fun validate(value: String, field: String) {
         val value = value.trim { it <= ' '}
 

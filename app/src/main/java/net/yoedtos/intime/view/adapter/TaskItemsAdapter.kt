@@ -12,7 +12,6 @@ import kotlinx.android.synthetic.main.item_task.view.*
 import net.yoedtos.intime.R
 import net.yoedtos.intime.model.entity.Card
 import net.yoedtos.intime.model.entity.Task
-import net.yoedtos.intime.service.TasksService
 import net.yoedtos.intime.view.ListViewUtils.hideAddCardListInput
 import net.yoedtos.intime.view.ListViewUtils.hideAddTaskListInput
 import net.yoedtos.intime.view.ListViewUtils.hideEditTaskListInput
@@ -49,7 +48,7 @@ class TaskItemsAdapter(private val context: Context, private var taskList:ArrayL
         }
 
         setupAddCloseOnClick(itemView)
-        setupCardListView(itemView, task.cards)
+        setupCardListView(position, itemView, task.cards)
 
         itemView.tv_task_list_title.text = task.title
 
@@ -93,12 +92,13 @@ class TaskItemsAdapter(private val context: Context, private var taskList:ArrayL
         this.changeListener = changeListener
     }
 
-    private fun setupCardListView(itemView: View, cardList: ArrayList<Card>) {
+    private fun setupCardListView(position: Int, itemView: View, cardList: ArrayList<Card>) {
         itemView.rv_card_list.layoutManager = LinearLayoutManager(itemView.context)
         itemView.rv_card_list.setHasFixedSize(true)
         val adapter = CardItemsAdapter(cardList)
         itemView.rv_card_list.adapter = adapter
 
+        adapter.setTaskIndex(position)
         adapter.setOnClickListener(context as TasksActivity)
     }
     /**

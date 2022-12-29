@@ -8,11 +8,12 @@ import net.yoedtos.intime.R
 import net.yoedtos.intime.model.entity.Card
 import net.yoedtos.intime.view.ListViewUtils.showCardLabelColor
 import net.yoedtos.intime.view.info.ItemViewHolder
-import net.yoedtos.intime.view.listener.ItemClickListener
+import net.yoedtos.intime.view.listener.CardClickListener
 
 class CardItemsAdapter(private val items: ArrayList<Card>): RecyclerView.Adapter<ItemViewHolder>() {
 
-    private var clickListener: ItemClickListener? = null
+    private var clickListener: CardClickListener? = null
+    private var index:Int = 0
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
         return ItemViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_card, parent, false))
@@ -31,7 +32,7 @@ class CardItemsAdapter(private val items: ArrayList<Card>): RecyclerView.Adapter
 
         itemView.setOnClickListener{
             if (clickListener != null) {
-                clickListener!!.onClick(position, items)
+                clickListener!!.onClick(index, position, items)
             }
         }
     }
@@ -40,7 +41,11 @@ class CardItemsAdapter(private val items: ArrayList<Card>): RecyclerView.Adapter
         return items.size
     }
 
-    fun setOnClickListener(clickListener: ItemClickListener) {
+    fun setTaskIndex(position: Int) {
+        this.index = position
+    }
+
+    fun setOnClickListener(clickListener: CardClickListener) {
         this.clickListener = clickListener
     }
 }

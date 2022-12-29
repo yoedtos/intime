@@ -9,23 +9,21 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import kotlinx.android.synthetic.main.activity_card.*
 import net.yoedtos.intime.R
-import net.yoedtos.intime.StringUtils
 import net.yoedtos.intime.model.dto.Member
 import net.yoedtos.intime.model.entity.Card
+import net.yoedtos.intime.service.CardService
+import net.yoedtos.intime.service.ResultListener
+import net.yoedtos.intime.utils.StringUtils
 import net.yoedtos.intime.view.ListViewUtils.hideCardMembersView
 import net.yoedtos.intime.view.ListViewUtils.showCardMembersView
 import net.yoedtos.intime.view.ViewUtils.setupActionBar
 import net.yoedtos.intime.view.ViewUtils.setupLabelColorInView
 import net.yoedtos.intime.view.adapter.CardMembersItemsAdapter
 import net.yoedtos.intime.view.adapter.MemberItemsAdapter
-import net.yoedtos.intime.view.info.CardMembersDialog
-import net.yoedtos.intime.view.info.ColorDialog
-import net.yoedtos.intime.view.info.DateSelectDialog
-import net.yoedtos.intime.view.info.DeleteAlert
+import net.yoedtos.intime.view.info.*
 import net.yoedtos.intime.view.listener.ItemClickListener
 import net.yoedtos.intime.view.listener.OnClickListener
 import java.util.*
-import kotlin.collections.ArrayList
 
 private val LOG_TAG = CardActivity::class.java.simpleName
 
@@ -33,6 +31,7 @@ class CardActivity : AppCompatActivity() {
     private var cardIndex: Int = 0
     private lateinit var card: Card
     private lateinit var stringUtils: StringUtils
+    private lateinit var cardService: CardService
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d(LOG_TAG, "On Create")
@@ -81,7 +80,7 @@ class CardActivity : AppCompatActivity() {
 
         btn_update_card.setOnClickListener{
             card.name = et_name_card.text.toString()
-
+            cardService.update(cardIndex, card)
             finish()
         }
 
@@ -89,7 +88,7 @@ class CardActivity : AppCompatActivity() {
     }
 
     override fun finish() {
-        var cards = ArrayList<Card>()
+        val cards: ArrayList<Card> = cardService.getCards()
         val intent = Intent()
         intent.putParcelableArrayListExtra(IntentExtra.CARD_LIST, cards)
         this.setResult(RESULT_OK, intent)
@@ -103,8 +102,9 @@ class CardActivity : AppCompatActivity() {
             cardIndex = intent.getIntExtra(IntentExtra.CARD_INDEX, 0)
 
             card = cardList[cardIndex]
-
+            cardService = CardService(cardIndex, cardList)
             supportActionBar?.title = card.name
+            loadCardMembers()
 
             et_name_card.setText(card.name)
             if (card.labelColor.isNotEmpty()) {
@@ -112,8 +112,20 @@ class CardActivity : AppCompatActivity() {
             }
 
             tv_select_due_date.text = stringUtils.formatDateFromMillis(card.dueDate)
-            setupSelectedMembersList()
         }
+    }
+
+    private fun loadCardMembers() {
+        cardService.loadMembers(object : ResultListener {
+            override fun onSuccess(any: Any) {
+                setupSelectedMembersList()
+            }
+
+            override fun onFailure(message: String) {
+                ErrorAlert(this@CardActivity, message).show()
+            }
+
+        })
     }
 
     private fun showLabelColorDialog() {
@@ -122,7 +134,7 @@ class CardActivity : AppCompatActivity() {
             override fun onClick(item: Any) {
                 val activity = this@CardActivity
                 val color = item as String
-
+                card.labelColor = color
                 setupLabelColorInView(activity, color)
             }
         })
@@ -131,15 +143,14 @@ class CardActivity : AppCompatActivity() {
     }
 
     private fun showSelectMemberDialog() {
-        var boardMembers = ArrayList<Member>()
-
+        val boardMembers = cardService.loadAssignedMembers()
         val memberItemsAdapter = MemberItemsAdapter(boardMembers)
 
         val cardMembersDialog = CardMembersDialog(this, memberItemsAdapter)
         cardMembersDialog.setOnClickListener(object : OnClickListener {
             override fun onClick(item: Any) {
                 val member = item as Member
-
+                cardService.updateMember(member)
                 setupSelectedMembersList()
             }
         })
@@ -162,14 +173,14 @@ class CardActivity : AppCompatActivity() {
     private fun deleteWithAlert(cardName: String) {
         DeleteAlert(this, cardName)
             .setPositiveButton(R.string.alert_yes) {dialogInterface, _ ->
-
+                cardService.delete(cardIndex)
                 dialogInterface.dismiss()
                 finish()
         }.create().show()
     }
 
     private fun setupSelectedMembersList() {
-        val selectedMembers = ArrayList<Member>()
+        val selectedMembers = cardService.getSelectedMembers()
 
         if(selectedMembers.size > 0) {
             selectedMembers.add(Member())
