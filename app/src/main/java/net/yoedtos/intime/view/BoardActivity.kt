@@ -5,6 +5,8 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_board.*
 import net.yoedtos.intime.R
@@ -29,6 +31,17 @@ class BoardActivity : AppCompatActivity() {
     private lateinit var boardService: BoardService
     private lateinit var progress: Progress
 
+    private val startForResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val intent = result.data
+            if (intent != null) {
+                val image: String = Uri.parse(intent.data.toString()).toString()
+                boardDTO.image = image
+                setImageToView(this, ImageData(image, R.drawable.ic_board_place_holder, iv_board_image))
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_board)
@@ -42,7 +55,7 @@ class BoardActivity : AppCompatActivity() {
         Log.d(LOG_TAG, "On resume")
         iv_board_image.setOnClickListener{
             if(PermissionHelper(this).isGranted(Constants.READ_STORAGE)) {
-                showImageChooser(this)
+                showImageChooser(startForResult)
             } else {
                 PermissionAlert(this).show()
             }
@@ -74,21 +87,7 @@ class BoardActivity : AppCompatActivity() {
             }
         }
     }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
-        super.onActivityResult(requestCode, resultCode, intent)
-        if (intent != null) {
-            if (resultCode == Activity.RESULT_OK
-                && requestCode == RequestCode.PICK_IMAGE_CODE
-                && intent.data != null) {
-
-                val image: String = Uri.parse(intent.data.toString()).toString()
-                boardDTO.image = image
-                setImageToView(this, ImageData(image, R.drawable.ic_board_place_holder, iv_board_image))
-            }
-        }
-    }
-
+    
     private fun initialize() {
         boardDTO = BoardDTO()
         boardService = BoardService()

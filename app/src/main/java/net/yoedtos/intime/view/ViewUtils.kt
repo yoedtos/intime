@@ -3,8 +3,11 @@ package net.yoedtos.intime.view
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
+import android.os.Build
 import android.provider.MediaStore
+import android.view.WindowInsets
 import android.view.WindowManager
+import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
@@ -14,12 +17,12 @@ import kotlinx.android.synthetic.main.activity_main.*
 import net.yoedtos.intime.R
 
 object ViewUtils {
-    fun showImageChooser(activity: AppCompatActivity) {
+    fun showImageChooser(activity: ActivityResultLauncher<Intent>) {
         val galleryIntent = Intent(
             Intent.ACTION_PICK,
             MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
 
-        activity.startActivityForResult(galleryIntent, RequestCode.PICK_IMAGE_CODE)
+        activity.launch(galleryIntent)
     }
 
     fun setImageToView(context: Context, imageData: ImageData) {
@@ -32,10 +35,15 @@ object ViewUtils {
     }
 
     fun setupFullScreen(activity: AppCompatActivity) {
-        activity.window.setFlags(
-            WindowManager.LayoutParams.FLAG_FULLSCREEN,
-            WindowManager.LayoutParams.FLAG_FULLSCREEN
-        )
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            activity.window.insetsController?.hide(WindowInsets.Type.statusBars())
+        } else {
+            @Suppress("DEPRECATION")
+            activity.window.setFlags(
+                WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN
+            )
+        }
     }
 
     fun setupActionBar(activity: AppCompatActivity, toolbar: Toolbar) {

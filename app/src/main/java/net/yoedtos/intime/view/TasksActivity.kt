@@ -6,6 +6,8 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.activity_tasks.*
@@ -19,8 +21,8 @@ import net.yoedtos.intime.view.ViewUtils.setupActionBar
 import net.yoedtos.intime.view.adapter.TaskItemsAdapter
 import net.yoedtos.intime.view.info.ErrorAlert
 import net.yoedtos.intime.view.info.Progress
-import net.yoedtos.intime.view.listener.ChangeListener
 import net.yoedtos.intime.view.listener.CardClickListener
+import net.yoedtos.intime.view.listener.ChangeListener
 
 private val LOG_TAG = TasksActivity::class.java.simpleName
 
@@ -31,6 +33,17 @@ class TasksActivity: AppCompatActivity(), CardClickListener, ChangeListener {
     private var taskList: ArrayList<Task> = ArrayList()
     private lateinit var tasksService:TasksService
     private lateinit var progress: Progress
+
+    private val startForResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val data = result.data
+            if (data != null && data.hasExtra(IntentExtra.CARD_LIST)) {
+                val cardList = data.getParcelableArrayListExtra<Card>(IntentExtra.CARD_LIST) as ArrayList<Card>
+                tasksService.addCards(taskIndex, cardList)
+                updateAndPersistData()
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,17 +80,6 @@ class TasksActivity: AppCompatActivity(), CardClickListener, ChangeListener {
         taskItemsAdapter?.notifyDataSetChanged()
 
         super.onResume()
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (resultCode == Activity.RESULT_OK && requestCode == RequestCode.CARD_VIEW) {
-            if (data != null && data.hasExtra(IntentExtra.CARD_LIST)) {
-                val cardList = data.getParcelableArrayListExtra<Card>(IntentExtra.CARD_LIST) as ArrayList<Card>
-                tasksService.addCards(taskIndex, cardList)
-                updateAndPersistData()
-            }
-        }
-        super.onActivityResult(requestCode, resultCode, data)
     }
 
     override fun onClick(index: Int, position: Int, item: Any) {
@@ -163,6 +165,7 @@ class TasksActivity: AppCompatActivity(), CardClickListener, ChangeListener {
         var cardIntent = Intent(this, CardActivity::class.java)
         cardIntent.putExtra(IntentExtra.CARD_INDEX, position)
         cardIntent.putParcelableArrayListExtra(IntentExtra.CARD_LIST, cards)
-        startActivityForResult(cardIntent, RequestCode.CARD_VIEW)
+        startForResult.launch(cardIntent)
+        //startActivityForResult(cardIntent, RequestCode.CARD_VIEW)
     }
 }
