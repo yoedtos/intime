@@ -100,6 +100,13 @@ Issues? Report them at https://github.com/firebase/firebase-tools/issues and att
 ```
 
 ## Using demo mode
+<span style="color:green">This feature is described in the docs</span> [here](https://firebase.google.com/docs/emulator-suite/connect_firestore)
+>We recommend you use demo projects wherever possible. Benefits include:
+>
+>Easier setup, since you can run the emulators without ever creating a Firebase project
+Stronger safety, since if your code accidentally invokes non-emulated (production) resources, there is no chance of data change, usage and billing
+Better offline support, since there is no need to access the internet to download your SDK configuration.
+
 `$ firebase emulators:start --project demo-intime-12084`
 
 ```
@@ -129,4 +136,18 @@ Emulator Hub running at 127.0.0.1:4400
 Other reserved ports: 4500, 9150
 
 Issues? Report them at https://github.com/firebase/firebase-tools/issues and attach the *-debug.log files.
+```
+### Access from external devices
+Change the configuration in *firebase.json* to allow emulator to listen outside request. Adding <em>"host": "0.0.0.0"</em>
+
+```json
+{
+  "emulators": {
+    "auth": {
+      "port": 9099,
+      "host": "0.0.0.0"
+    },
+    ...
+  }
+}
 ```
